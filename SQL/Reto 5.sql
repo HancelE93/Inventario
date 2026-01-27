@@ -24,7 +24,7 @@ values ('Con alcohol',5);
 insert into categorias (nombre,categoria_padre)
 values ('Sin alcohol',5);
 
-select * from categorias
+select * from categorias;
 
 --CATEGORIAS UNIDAD DE MEDIDA 
 drop table if exists categorias_unidad_medida;
@@ -45,6 +45,7 @@ select * from categorias_unidad_medida;
 
 
 -- UNIDAD DE MEDIDA 
+drop table if exists unidad_medida;
 create table unidad_medida(
 	codigo_u_m char(2) not null,
 	descripcion varchar(100) not null,
@@ -105,7 +106,7 @@ values ('Mostaza','kg',0.95,'true',0.89,3,0);
 insert into producto (nombre, codigo_u_m,precio_venta,tiene_iva,costo,codigo_cat,stock)
 values ('Fius tea','u',0.8,'true',0.7,7,49);
 
-select * from producto
+select * from producto;
 
 --TIPO DE DOCUMENTO
 
@@ -123,7 +124,7 @@ values ('C','CEDULA');
 insert into tipo_documento (codigo_tp,  descripcion)
 values ('R','RUC');
 
-select * from tipo_documento
+select * from tipo_documento;
 
 --PROVEEDORES
 DROP TABLE IF EXISTS proveedores;
@@ -146,7 +147,7 @@ insert into proveedores (cedula_p, tipo_documento ,nombre, telefono, correo, dir
 values ('1792285747002','R','SNACKS SA','0992320398','snack@gmail.com','La Tola');
 
 
-select * from proveedores
+select * from proveedores;
 
 --ESTADO DE PEDIDOS
 DROP TABLE IF EXISTS estado_pedidos;
@@ -163,7 +164,7 @@ values ('S','SOLICITADO');
 insert into estado_pedidos (codigo_ep,  descripcion)
 values ('R','RECIBIDO');
 
-select * from estado_pedidos 
+select * from estado_pedidos ;
 
 --CACECERA PEDIDIOS
 
@@ -190,7 +191,7 @@ VALUES ('1792285747001', '2023-11-20 00:00:00', 'R');
 INSERT INTO cabecera_pedido (proveedor, fecha, estado)
 VALUES ('1792285747002', '2023-11-20 00:00:00', 'S');
 
-select * from cabecera_pedido
+select * from cabecera_pedido;
 
 
 -- DETALLES DE PEDIDO
@@ -227,7 +228,7 @@ INSERT INTO detalle_pedido
 (numero_pedido, codigo_producto, cantidad_solicitada, subtotal, cantidad_recibida)
 VALUES (2, 1, 10, 3.73, 0);
 
-select * from detalle_pedido
+select * from detalle_pedido;
 
 
 --HISTORIAL DE STOCK
@@ -262,7 +263,7 @@ VALUES ('2023-11-20 00:00:00', 'VENTA 1', 1, -5);
 INSERT INTO historial_stock (fecha, referencia, codigo_producto, cantidad)
 VALUES ('2023-11-20 00:00:00', 'VENTA 1', 4, -1);
 
-select * from historial_stock 
+select * from historial_stock; 
 
 --CABECERA VENTAS
 
