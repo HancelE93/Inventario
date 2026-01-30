@@ -1,16 +1,19 @@
 package com.krakedev.inventarios.bdd;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-
 import com.krakedev.inventarios.excepciones.KrakeDevException;
 import com.krakedev.inventarios.utils.ConexionBDD;
+import com.krakedev.invetnarios.entidades.Categoria;
+import com.krakedev.invetnarios.entidades.Producto;
 import com.krakedev.invetnarios.entidades.Proveedor;
 import com.krakedev.invetnarios.entidades.TipoDocumento;
+import com.krakedev.invetnarios.entidades.UnidadDeMedida;
 
 
 
@@ -117,7 +120,8 @@ public class ProveedoresBDD {
 		}
 
 	}
-
+	
+	
 	
 	
 }
