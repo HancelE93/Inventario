@@ -11,6 +11,7 @@ import com.krakedev.inventarios.excepciones.KrakeDevException;
 import com.krakedev.inventarios.utils.ConexionBDD;
 import com.krakedev.invetnarios.entidades.Categoria;
 import com.krakedev.invetnarios.entidades.Producto;
+
 import com.krakedev.invetnarios.entidades.UnidadDeMedida;
 
 public class ProductoBDD {
@@ -53,7 +54,7 @@ public class ProductoBDD {
 				udm.setDescripcion(descripcionUnidadMedida);
 				
 				Categoria categoria= new Categoria();
-				categoria.setCogido(codigoCategoria);
+				categoria.setCodigo(codigoCategoria);
 				categoria.setNombre(nombreCategotia);
 				
 				producto= new Producto();
@@ -80,5 +81,53 @@ public class ProductoBDD {
 		
 		return productos;
 	}
+	
+	public void insertar(Producto producto) throws KrakeDevException {
+		Connection con = null;
+		PreparedStatement ps=null;
+		try {
+			con = ConexionBDD.obtenerConexion();
+			ps = con.prepareStatement("insert into producto (nombre, codigo_u_m,precio_venta,tiene_iva,costo,codigo_cat,stock) values(?, ?, ?, ?, ?, ?, ?)");
+
+			   ps.setString(1, producto.getNombre());
+			   
+			   // Unidad de medida → objeto → código
+		        ps.setString(2, producto.getUnidadMedida().getNombre());
+
+		        // BigDecimal
+		        ps.setBigDecimal(3, producto.getPrecioVenta());
+
+		        // boolean
+		        ps.setBoolean(4, producto.isTieneIva());
+
+		        // BigDecimal
+		        ps.setBigDecimal(5, producto.getCoste());
+
+		        // Categoría → objeto → código
+		        ps.setInt(6, producto.getCategoria().getCodigo());
+
+		        // int
+		        ps.setInt(7, producto.getStock());
+
+			ps.executeUpdate();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new KrakeDevException("Error al insertat el producto. Detalle: "+e.getMessage());
+		} catch (KrakeDevException e) {
+			e.printStackTrace();
+			throw e;
+
+		}finally {
+			if (con!=null)
+				try {
+					con.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+		}
+
+	}
+	
 
 }

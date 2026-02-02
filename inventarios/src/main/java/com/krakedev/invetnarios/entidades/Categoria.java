@@ -2,28 +2,30 @@ package com.krakedev.invetnarios.entidades;
 
 public class Categoria {
 
-	private int cogido;
+	private int codigo;
 	private String nombre;
 	private Categoria CategoriaPadre;
 	
+	
+	
 	@Override
 	public String toString() {
-		return "Categoria [cogido=" + cogido + ", nombre=" + nombre + ", CategoriaPadre=" + CategoriaPadre + "]";
+		return "Categoria [codigo=" + codigo + ", nombre=" + nombre + ", CategoriaPadre=" + CategoriaPadre + "]";
 	}
 	public Categoria() {
 		super();
 	}
-	public Categoria(int cogido, String nombre, Categoria categoriaPadre) {
+	public Categoria(int codigo, String nombre, Categoria categoriaPadre) {
 		super();
-		this.cogido = cogido;
+		this.codigo = codigo;
 		this.nombre = nombre;
 		CategoriaPadre = categoriaPadre;
 	}
-	public int getCogido() {
-		return cogido;
+	public int getCodigo() {
+		return codigo;
 	}
-	public void setCogido(int cogido) {
-		this.cogido = cogido;
+	public void setCodigo(int codigo) {
+		this.codigo = codigo;
 	}
 	public String getNombre() {
 		return nombre;
@@ -37,6 +39,8 @@ public class Categoria {
 	public void setCategoriaPadre(Categoria categoriaPadre) {
 		CategoriaPadre = categoriaPadre;
 	}
+	
+	
 	
 	
 }
