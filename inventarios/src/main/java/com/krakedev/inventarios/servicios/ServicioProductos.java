@@ -12,9 +12,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.krakedev.inventarios.bdd.ProductoBDD;
-
+import com.krakedev.inventarios.entidades.Producto;
 import com.krakedev.inventarios.excepciones.KrakeDevException;
-import com.krakedev.invetnarios.entidades.Producto;
 
 
 @Path("productos")

@@ -7,12 +7,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import com.krakedev.inventarios.entidades.Categoria;
+import com.krakedev.inventarios.entidades.Producto;
+import com.krakedev.inventarios.entidades.UnidadDeMedida;
 import com.krakedev.inventarios.excepciones.KrakeDevException;
 import com.krakedev.inventarios.utils.ConexionBDD;
-import com.krakedev.invetnarios.entidades.Categoria;
-import com.krakedev.invetnarios.entidades.Producto;
-
-import com.krakedev.invetnarios.entidades.UnidadDeMedida;
 
 public class ProductoBDD {
 

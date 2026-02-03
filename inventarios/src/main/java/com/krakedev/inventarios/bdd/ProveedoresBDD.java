@@ -7,11 +7,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import com.krakedev.inventarios.entidades.Proveedor;
+import com.krakedev.inventarios.entidades.TipoDocumento;
 import com.krakedev.inventarios.excepciones.KrakeDevException;
 import com.krakedev.inventarios.utils.ConexionBDD;
-
-import com.krakedev.invetnarios.entidades.Proveedor;
-import com.krakedev.invetnarios.entidades.TipoDocumento;
 
 
 
