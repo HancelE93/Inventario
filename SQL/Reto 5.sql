@@ -71,7 +71,7 @@ values ('kg','kilogramo','P');
 insert into unidad_medida (codigo_u_m,descripcion,codigo_cat_u_m)
 values ('lb','libra','P');
 
-select * from unidad_medida
+select * from unidad_medida;
 
 --PRODUCTO
 
@@ -98,7 +98,7 @@ CREATE TABLE producto (
 
 
 insert into producto (nombre, codigo_u_m,precio_venta,tiene_iva,costo,codigo_cat,stock)
-values ('Coca cola pequeña','u',0.5804,'true',0.3723,7,100);
+values ('Coca cola pequeña','ml',0.5804,'true',0.3723,7,100);
 insert into producto (nombre, codigo_u_m,precio_venta,tiene_iva,costo,codigo_cat,stock)
 values ('Salsa de tomate','kg',0.95,'true',0.8736,3,0);
 insert into producto (nombre, codigo_u_m,precio_venta,tiene_iva,costo,codigo_cat,stock)
