@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -89,6 +90,11 @@ public class PedidosBDD {
 	    Connection con = null;
 	    PreparedStatement psCab = null;
 	    PreparedStatement psDet = null;
+	    PreparedStatement psHist = null;
+	    PreparedStatement psStock = null;
+
+	    Date fechaActual = new Date();
+	    Timestamp fechaHoraActual = new Timestamp(fechaActual.getTime());
 
 	    try {
 	        con = ConexionBDD.obtenerConexion();
@@ -101,11 +107,12 @@ public class PedidosBDD {
 	        psCab.setInt(1, pedido.getCodigo());
 	        psCab.executeUpdate();
 
-	        // 2️⃣ Actualizar detalles
+	        // 2️⃣ Recorrer detalles
 	        ArrayList<DetallePedido> detalles = pedido.getDetalles();
 
 	        for (DetallePedido det : detalles) {
 
+	            // 🔹 Actualizar detalle_pedido
 	            psDet = con.prepareStatement(
 	                "UPDATE detalle_pedido " +
 	                "SET cantidad_recibida = ?, subtotal = ? " +
@@ -113,29 +120,53 @@ public class PedidosBDD {
 	            );
 
 	            psDet.setInt(1, det.getCantidadRecibida());
-	            
-	            BigDecimal precio = det.getProducto().getPrecioVenta(); 
+
+	            BigDecimal precio = det.getProducto().getPrecioVenta();
 	            BigDecimal cantidad = new BigDecimal(det.getCantidadRecibida());
 	            BigDecimal subtotal = precio.multiply(cantidad);
 
 	            psDet.setBigDecimal(2, subtotal);
 	            psDet.setInt(3, det.getCodigo());
-
 	            psDet.executeUpdate();
+
+	            // 🔥 INSERT EN historial_stock
+	            psHist = con.prepareStatement(
+	                "INSERT INTO historial_stock (fecha, referencia, codigo_producto, cantidad) " +
+	                "VALUES (?, ?, ?, ?)"
+	            );
+
+	            psHist.setTimestamp(1, fechaHoraActual);
+	            psHist.setString(2, "RECIBO PEDIDO " + pedido.getCodigo());
+	            psHist.setInt(3, det.getProducto().getCodigo()); // debe ser codigo_p
+	            psHist.setInt(4, det.getCantidadRecibida());
+
+	            psHist.executeUpdate();
+
+	            // 🔥 Actualizar stock del producto
+	            psStock = con.prepareStatement(
+	                "UPDATE producto SET stock = stock + ? WHERE codigo_p = ?"
+	            );
+
+	            psStock.setInt(1, det.getCantidadRecibida());
+	            psStock.setInt(2, det.getProducto().getCodigo());
+
+	            psStock.executeUpdate();
 	        }
 
 	    } catch (SQLException e) {
 	        e.printStackTrace();
 	        throw new KrakeDevException("Error al recibir pedido. Detalle: " + e.getMessage());
+
 	    } finally {
-	        if (con != null) {
-	            try {
-	                con.close();
-	            } catch (SQLException e) {
-	                e.printStackTrace();
-	            }
+	        try {
+	            if (psCab != null) psCab.close();
+	            if (psDet != null) psDet.close();
+	            if (psHist != null) psHist.close();
+	            if (psStock != null) psStock.close();
+	            if (con != null) con.close();
+	        } catch (SQLException e) {
+	            e.printStackTrace();
 	        }
 	    }
-
 	}
 }
