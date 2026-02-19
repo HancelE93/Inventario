@@ -46,6 +46,32 @@ public class ServiciosProveedores {
 			return Response.serverError().build();
 		}
 	}
-}	
+	
+	 // GET para buscar un proveedor por identificador
+    @Path("buscarP/{idProveedor}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response buscarProveedor(@PathParam("idProveedor") String idProveedor) {
+        ProveedoresBDD provBDD = new ProveedoresBDD();
+        try {
+            Proveedor proveedor = provBDD.buscarPorIdentificador(idProveedor);
+            
+            if (proveedor != null) {
+                // Si se encuentra, devuelve JSON
+                return Response.ok(proveedor).build();
+            } else {
+                // Si no existe, devuelve 404
+                return Response.status(Response.Status.NOT_FOUND)
+                               .entity("Proveedor no encontrado").build();
+            }
+        } catch (KrakeDevException e) {
+            e.printStackTrace();
+            return Response.serverError().entity(e.getMessage()).build();
+        }
+    }
+}
+	
+
+
 	
 	

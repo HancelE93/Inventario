@@ -91,7 +91,7 @@ public class ProductoBDD {
 			   ps.setString(1, producto.getNombre());
 			   
 			   // Unidad de medida → objeto → código
-		        ps.setString(2, producto.getUnidadMedida().getNombre());
+		        ps.setString(2, producto.getUnidadMedida().getCodigo());
 
 		        // BigDecimal
 		        ps.setBigDecimal(3, producto.getPrecioVenta());
@@ -128,5 +128,84 @@ public class ProductoBDD {
 
 	}
 	
+	public void actualizar(Producto producto) throws KrakeDevException {
+	    Connection con = null;
+	    PreparedStatement ps = null;
+
+	    try {
+	        con = ConexionBDD.obtenerConexion();
+
+	        ps = con.prepareStatement(
+	            "UPDATE producto SET " +
+	            "nombre=?, codigo_u_m=?, precio_venta=?, tiene_iva=?, costo=?, codigo_cat=?, stock=? " +
+	            "WHERE codigo_p=?"
+	        );
+
+	        ps.setString(1, producto.getNombre());
+	        ps.setString(2, producto.getUnidadMedida().getCodigo());
+	        ps.setBigDecimal(3, producto.getPrecioVenta());
+	        ps.setBoolean(4, producto.isTieneIva());
+	        ps.setBigDecimal(5, producto.getCoste());
+	        ps.setInt(6, producto.getCategoria().getCodigo());
+	        ps.setInt(7, producto.getStock());
+	        ps.setInt(8, producto.getCodigo());
+
+	        ps.executeUpdate();
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        throw new KrakeDevException("Error al actualizar producto. Detalle: " + e.getMessage());
+	    } catch (KrakeDevException e) {
+	        e.printStackTrace();
+	        throw e;
+	    } finally {
+	        if (con != null)
+	            try {
+	                con.close();
+	            } catch (SQLException e) {
+	                e.printStackTrace();
+	            }
+	    }
+	}
+	
+	
+	public Producto buscarPorCodigo(int idProducto) throws KrakeDevException {
+        Producto producto = null;
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            con = ConexionBDD.obtenerConexion();
+            ps = con.prepareStatement("SELECT * FROM producto WHERE codigo_p = ?");
+            ps.setInt(1, idProducto);
+            rs = ps.executeQuery();
+
+            if (rs.next()) {
+                producto = new Producto();
+                producto.setCodigo(rs.getInt("codigo_p"));
+                producto.setNombre(rs.getString("nombre"));
+                producto.setPrecioVenta(rs.getBigDecimal("precio_venta"));
+                producto.setCoste(rs.getBigDecimal("costo"));
+                producto.setStock(rs.getInt("stock"));
+                // Puedes mapear categoría, unidadMedida, etc. si quieres
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new KrakeDevException("Error al buscar producto: " + e.getMessage());
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return producto;
+    }
+
 
 }

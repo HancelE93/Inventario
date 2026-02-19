@@ -11,7 +11,10 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import com.krakedev.inventarios.entidades.DetallePedido;
+import com.krakedev.inventarios.entidades.EstadoPedido;
 import com.krakedev.inventarios.entidades.Pedido;
+import com.krakedev.inventarios.entidades.Producto;
+import com.krakedev.inventarios.entidades.Proveedor;
 import com.krakedev.inventarios.excepciones.KrakeDevException;
 import com.krakedev.inventarios.utils.ConexionBDD;
 
@@ -168,5 +171,96 @@ public class PedidosBDD {
 	            e.printStackTrace();
 	        }
 	    }
+	}
+	
+	public ArrayList<Pedido> buscarPedidosPorProveedor(String idProveedor) throws KrakeDevException {
+	    ArrayList<Pedido> pedidos = new ArrayList<>();
+	    Connection con = null;
+	    PreparedStatement psPedido = null;
+	    PreparedStatement psDetalle = null;
+	    ResultSet rsPedido = null;
+	    ResultSet rsDetalle = null;
+
+	    try {
+	        con = ConexionBDD.obtenerConexion();
+
+	        // 1️⃣ Consultar todos los pedidos del proveedor
+	        String sqlPedidos = "SELECT numero, proveedor, fecha, estado FROM cabecera_pedido WHERE proveedor = ?";
+	        psPedido = con.prepareStatement(sqlPedidos);
+	        psPedido.setString(1,idProveedor); // convertir int a string sin valueOf
+	        rsPedido = psPedido.executeQuery();
+
+	        while (rsPedido.next()) {
+	            Pedido pedido = new Pedido();
+	            pedido.setCodigo(rsPedido.getInt("numero"));
+	            pedido.setFecha(rsPedido.getDate("fecha"));
+
+	            // 🔹 Mapear estado usando tu clase EstadoPedido
+	            EstadoPedido estado = new EstadoPedido();
+	            String codigoEstado = rsPedido.getString("estado"); // 'S' o 'R'
+	            estado.setCodigo_ep(codigoEstado);
+
+	            // Asignar descripción según código
+	            if ("S".equals(codigoEstado)) {
+	                estado.setDescripcion("SOLICITADO");
+	            } else if ("R".equals(codigoEstado)) {
+	                estado.setDescripcion("RECIBIDO");
+	            } else {
+	                estado.setDescripcion("DESCONOCIDO"); // opcional
+	            }
+
+	            pedido.setEstado(estado);
+
+	            // 🔹 Configurar proveedor
+	            Proveedor proveedor = new Proveedor();
+	            proveedor.setIdentificador(rsPedido.getString("proveedor")); // string según tu DB
+	            pedido.setProveedor(proveedor);
+
+	            // 2️⃣ Consultar detalles del pedido
+	            String sqlDetalles = "SELECT codigo_dp, codigo_producto, cantidad_solicitada, cantidad_recibida, subtotal "
+	                               + "FROM detalle_pedido WHERE numero_pedido = ?";
+	            psDetalle = con.prepareStatement(sqlDetalles);
+	            psDetalle.setInt(1, pedido.getCodigo());
+	            rsDetalle = psDetalle.executeQuery();
+
+	            ArrayList<DetallePedido> detalles = new ArrayList<>();
+	            while (rsDetalle.next()) {
+	                DetallePedido detalle = new DetallePedido();
+	                detalle.setCodigo(rsDetalle.getInt("codigo_dp"));
+	                detalle.setCantidadSolicitada(rsDetalle.getInt("cantidad_solicitada"));
+	                detalle.setCantidadRecibida(rsDetalle.getInt("cantidad_recibida"));
+	                detalle.setSubtotal(rsDetalle.getBigDecimal("subtotal"));
+
+	                // Producto asociado
+	                Producto producto = new Producto();
+	                producto.setCodigo(rsDetalle.getInt("codigo_producto"));
+	                detalle.setProducto(producto);
+
+	              
+	                detalles.add(detalle);
+	            }
+
+	            pedido.setDetalles(detalles);
+
+	            if (rsDetalle != null) rsDetalle.close();
+	            if (psDetalle != null) psDetalle.close();
+
+	            pedidos.add(pedido);
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        throw new KrakeDevException("Error al buscar pedidos por proveedor: " + e.getMessage());
+	    } finally {
+	        try {
+	            if (rsPedido != null) rsPedido.close();
+	            if (psPedido != null) psPedido.close();
+	            if (con != null) con.close();
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	    }
+
+	    return pedidos;
 	}
 }

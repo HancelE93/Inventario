@@ -119,6 +119,53 @@ public class ProveedoresBDD {
 	}
 	
 	
-	
+	public Proveedor buscarPorIdentificador(String identificador) throws KrakeDevException {
+	    Connection con = null;
+	    PreparedStatement ps = null;
+	    ResultSet rs = null;
+	    Proveedor proveedor = null;
+
+	    try {
+	        con = ConexionBDD.obtenerConexion();
+	        String sql = "SELECT prov.cedula_p, prov.tipo_documento, td.descripcion, prov.nombre, prov.telefono, prov.correo, prov.direccion " +
+	                     "FROM proveedores prov, tipo_documento td " +
+	                     "WHERE prov.tipo_documento = td.codigo_tp " +
+	                     "AND prov.cedula_p = ?";   // buscar por identificador exacto
+
+	        ps = con.prepareStatement(sql);
+	        ps.setString(1, identificador);
+	        rs = ps.executeQuery();
+
+	        if (rs.next()) {
+	            String cedula_p = rs.getString("cedula_p");
+	            String codigoTipoDocumento = rs.getString("tipo_documento");
+	            String descripcionTipoDocumento = rs.getString("descripcion");
+	            String nombre = rs.getString("nombre");
+	            String telefono = rs.getString("telefono");
+	            String correo = rs.getString("correo");
+	            String direccion = rs.getString("direccion");
+	            TipoDocumento td = new TipoDocumento(codigoTipoDocumento, descripcionTipoDocumento);
+
+	            proveedor = new Proveedor(cedula_p, td, nombre, telefono, correo, direccion);
+	        }
+
+	    } catch (KrakeDevException e) {
+	        e.printStackTrace();
+	        throw e;
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        throw new KrakeDevException("Error al consultar proveedor: " + e.getMessage());
+	    } finally {
+	        try {
+	            if (rs != null) rs.close();
+	            if (ps != null) ps.close();
+	            if (con != null) con.close();
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	    }
+
+	    return proveedor;
+	}
 	
 }
